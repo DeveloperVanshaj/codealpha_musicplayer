@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+   <style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.player {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+.controls button {
+    margin: 5px;
+}
+
+.volume {
+    margin: 20px 0;
+}
+
+#playlist {
+    list-style: none;
+    padding: 0;
+}
+
+#playlist li {
+    cursor: pointer;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+#playlist li:hover {
+    background-color: #d0d0d0;
+}
+
+   </style>
+</head>
+<body>
+    <div class="player">
+        <div class="controls">
+            <button id="prev">Prev</button>
+            <button id="play">Play</button>
+            <button id="pause">Pause</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="volume">
+            <label for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+        </div>
+        <div class="playlist">
+            <input type="text" id="search" placeholder="Search...">
+            <ul id="playlist">
+                <!-- Playlist items will be dynamically inserted here -->
+            </ul>
+        </div>
+        <audio id="audio" controls>
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+   <script>
+    const audio = document.getElementById('audio');
+const playButton = document.getElementById('play');
+const pauseButton = document.getElementById('pause');
+const prevButton = document.getElementById('prev');
+const nextButton = document.getElementById('next');
+const volumeControl = document.getElementById('volume');
+const searchInput = document.getElementById('search');
+const playlistElement = document.getElementById('playlist');
+
+let currentTrackIndex = 0;
+const tracks = [
+    { title: "Track 1", src: "path/to/track1.mp3" },
+    { title: "Track 2", src: "path/to/track2.mp3" },
+    { title: "Track 3", src: "path/to/track3.mp3" }
+];
+
+function loadTrack(index) {
+    audio.src = tracks[index].src;
+    audio.play();
+    updatePlaylist();
+}
+
+function updatePlaylist() {
+    playlistElement.innerHTML = '';
+    tracks.forEach((track, index) => {
+        const li = document.createElement('li');
+        li.textContent = track.title;
+        li.addEventListener('click', () => {
+            currentTrackIndex = index;
+            loadTrack(currentTrackIndex);
+        });
+        playlistElement.appendChild(li);
+    });
+}
+
+playButton.addEventListener('click', () => {
+    if (audio.paused) {
+        audio.play();
+    }
+});
+
+pauseButton.addEventListener('click', () => {
+    if (!audio.paused) {
+        audio.pause();
+    }
+});
+
+prevButton.addEventListener('click', () => {
+    currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+    loadTrack(currentTrackIndex);
+});
+
+nextButton.addEventListener('click', () => {
+    currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+    loadTrack(currentTrackIndex);
+});
+
+volumeControl.addEventListener('input', (e) => {
+    audio.volume = e.target.value;
+});
+
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    Array.from(playlistElement.children).forEach(li => {
+        if (li.textContent.toLowerCase().includes(query)) {
+            li.style.display = '';
+        } else {
+            li.style.display = 'none';
+        }
+    });
+});
+
+// Load the first track on initialization
+loadTrack(currentTrackIndex);
+
+   </script>
+</body>
+</html>
